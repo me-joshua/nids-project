@@ -1,0 +1,78 @@
+{
+  "modality_shapes": {
+    "statistical": 13,
+    "temporal": 9,
+    "categorical": 84,
+    "host_based": 10,
+    "binary": 6
+  },
+  "feature_groups": {
+    "statistical": [
+      "duration",
+      "src_bytes",
+      "dst_bytes",
+      "wrong_fragment",
+      "urgent",
+      "hot",
+      "num_failed_logins",
+      "num_compromised",
+      "num_root",
+      "num_file_creations",
+      "num_shells",
+      "num_access_files",
+      "num_outbound_cmds"
+    ],
+    "temporal": [
+      "count",
+      "srv_count",
+      "serror_rate",
+      "srv_serror_rate",
+      "rerror_rate",
+      "srv_rerror_rate",
+      "same_srv_rate",
+      "diff_srv_rate",
+      "srv_diff_host_rate"
+    ],
+    "categorical": [
+      "protocol_type",
+      "service",
+      "flag"
+    ],
+    "host_based": [
+      "dst_host_count",
+      "dst_host_srv_count",
+      "dst_host_same_srv_rate",
+      "dst_host_diff_srv_rate",
+      "dst_host_same_src_port_rate",
+      "dst_host_srv_diff_host_rate",
+      "dst_host_serror_rate",
+      "dst_host_srv_serror_rate",
+      "dst_host_rerror_rate",
+      "dst_host_srv_rerror_rate"
+    ],
+    "binary": [
+      "land",
+      "logged_in",
+      "root_shell",
+      "su_attempted",
+      "is_host_login",
+      "is_guest_login"
+    ]
+  },
+  "model_info": {
+    "tensorflow_model": "multimodal_deep_learning (SavedModel format)",
+    "base_models": [
+      "random_forest",
+      "extra_trees",
+      "gradient_boosting",
+      "svm",
+      "neural_network",
+      "logistic_regression"
+    ],
+    "ensemble_models": [
+      "hard_voting",
+      "soft_voting"
+    ],
+    "total_parameters": 102305
+  }
+}
