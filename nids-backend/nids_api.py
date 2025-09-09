@@ -31,8 +31,13 @@ import tensorflow as tf
 import joblib
 import json
 
+
 app = Flask(__name__)
 CORS(app)
+
+@app.route("/", methods=["GET"])
+def index():
+    return "NIDS Backend is running.", 200
 
 class NIDSPredictor:
     """Network Intrusion Detection System Predictor"""
