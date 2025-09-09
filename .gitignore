@@ -8,8 +8,11 @@ venv310/
 __pycache__/
 *.pyc
 
-# Environment and system files
-.env
+# Backend environment files (sensitive)
+nids-backend/.env
+nids-backend/.env.local
+
+# System files
 .DS_Store
 
 # VSCode and editor folders

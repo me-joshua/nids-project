@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Shield, AlertTriangle, CheckCircle, XCircle, Loader2, Bot, User, Trash2 } from 'lucide-react';
 import axios from 'axios';
 
+// API Configuration
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://nids-project.onrender.com';
+
 const App = () => {
   const [messages, setMessages] = useState([
     {
@@ -13,15 +16,43 @@ const App = () => {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [backendStatus, setBackendStatus] = useState('checking'); // 'checking', 'online', 'offline'
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Check backend health on component mount
+  const checkBackendHealth = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/health`, {
+        timeout: 10000 // 10 second timeout
+      });
+      setBackendStatus('online');
+      console.log('Backend health check successful:', response.data);
+    } catch (error) {
+      setBackendStatus('offline');
+      console.error('Backend health check failed:', error);
+      
+      // Add a system message about backend status
+      const statusMessage = {
+        id: Date.now(),
+        type: 'system',
+        content: `Backend service connection failed. You can still use the interface, but packet analysis may not work until the backend is available. (${API_BASE_URL})`,
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, statusMessage]);
+    }
+  };
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    checkBackendHealth();
+  }, []);
 
   const getThreatLevel = (confidence) => {
     if (confidence >= 0.9) return { level: 'HIGH', color: 'threat-high', glow: 'threat-glow-high' };
@@ -115,7 +146,7 @@ const App = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('/api/analyze', {
+      const response = await axios.post(`${API_BASE_URL}/api/analyze`, {
         packet_data: inputValue.trim()
       });
 
@@ -129,18 +160,32 @@ const App = () => {
 
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
-      const errorMessage = {
+      let errorMessage = 'Failed to analyze packet. Please try again.';
+      let errorDetails = error.message;
+
+      if (error.code === 'NETWORK_ERROR' || error.message.includes('Network Error')) {
+        errorMessage = 'Cannot connect to the NIDS backend service. Please check your internet connection and try again.';
+        errorDetails = `Backend URL: ${API_BASE_URL}`;
+      } else if (error.response?.status === 404) {
+        errorMessage = 'API endpoint not found. The backend service may be starting up.';
+      } else if (error.response?.status >= 500) {
+        errorMessage = 'Backend server error. The service may be temporarily unavailable.';
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      }
+
+      const errorMessageObj = {
         id: Date.now() + 1,
         type: 'bot',
         content: {
           error: true,
-          message: error.response?.data?.error || 'Failed to analyze packet. Please ensure the backend is running and try again.',
-          details: error.message
+          message: errorMessage,
+          details: errorDetails
         },
         timestamp: new Date()
       };
 
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages(prev => [...prev, errorMessageObj]);
     } finally {
       setIsLoading(false);
     }
@@ -169,9 +214,21 @@ const App = () => {
       <div className="w-64 bg-chat-sidebar border-r border-chat-border p-4 flex flex-col">
         <div className="flex items-center gap-2 mb-6">
           <Shield className="h-8 w-8 text-blue-400" />
-          <div>
+          <div className="flex-1">
             <h1 className="font-bold text-lg">NAS Technology</h1>
             <p className="text-xs text-gray-400">NIDS AI System</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className={`w-3 h-3 rounded-full ${
+              backendStatus === 'online' ? 'bg-green-400' : 
+              backendStatus === 'offline' ? 'bg-red-400' : 
+              'bg-yellow-400'
+            }`}></div>
+            <span className="text-xs text-gray-400 mt-1">
+              {backendStatus === 'online' ? 'Online' : 
+               backendStatus === 'offline' ? 'Offline' : 
+               'Checking'}
+            </span>
           </div>
         </div>
 
