@@ -1,3 +1,6 @@
+@app.route("/", methods=["GET"])
+def index():
+    return "NIDS Backend is running.", 200
 #!/usr/bin/env python3
 """
 Flask API Backend for Network Intrusion Detection System
@@ -705,26 +708,6 @@ if __name__ == '__main__':
     print("=" * 60)
     
     # System information
-    print(f"🔧 TensorFlow version: {tf.__version__}")
-    print(f"🔧 CUDA built support: {tf.test.is_built_with_cuda()}")
-    
-    # Check GPU status
-    gpu_devices = tf.config.list_physical_devices('GPU')
-    if gpu_devices:
-        print(f"🔧 Operating mode: GPU-accelerated ({len(gpu_devices)} GPU(s) available) ⚡")
-        print(f"🔧 GPU devices: {[device.name for device in gpu_devices]}")
-    else:
-        print(f"🔧 Operating mode: CPU-optimized (no GPU available)")
-    
-    print(f"🔧 CPU threads: {tf.config.threading.get_inter_op_parallelism_threads()} inter-op")
-    print(f"🔧 Available devices: {[device.name for device in tf.config.list_logical_devices()]}")
-    
-    # Performance note
-    if not gpu_devices:
-        print(f"ℹ️  Note: For GPU acceleration, ensure CUDA 11.0 + cuDNN 8.6 libraries are available")
-        print(f"ℹ️  Current setup optimized for CPU inference performance")
-    else:
-        print(f"🚀 GPU acceleration enabled - training and inference will use GPU when possible!")
     
     # Load models on startup
     predictor.load_models()
