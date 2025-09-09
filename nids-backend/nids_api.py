@@ -13,11 +13,8 @@ Features:
 - CORS support for frontend integration
 """
 
-# Import system-wide CUDA setup BEFORE other imports
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import cuda_setup
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -111,10 +108,10 @@ class NIDSPredictor:
                 self.feature_groups = self._get_default_feature_groups()
             
             # Load TensorFlow multimodal model
-            tf_model_path = os.path.join(self.models_dir, "multimodal_deep_learning")
+            tf_model_path = os.path.join(self.models_dir, "multimodal_deep_learning.keras")
             if os.path.exists(tf_model_path):
                 self.multimodal_model = tf.keras.models.load_model(tf_model_path)
-                print("✅ Loaded TensorFlow multimodal model")
+                print("✅ Loaded TensorFlow multimodal model (.keras format)")
             
             # Load sklearn base models
             base_models_dir = os.path.join(self.models_dir, "base_models")
