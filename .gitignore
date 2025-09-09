@@ -1,0 +1,20 @@
+# Node.js dependencies
+node_modules/
+
+# Python virtual environment
+venv310/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Environment and system files
+.env
+.DS_Store
+
+# VSCode and editor folders
+.vscode/
+.idea/
+
+# OS generated files
+Thumbs.db

@@ -4,7 +4,7 @@
 ## Load TensorFlow Model:
 ```python
 import tensorflow as tf
-model = tf.keras.models.load_model('models\multimodal_deep_learning')
+model = tf.keras.models.load_model('models\multimodal_deep_learning.keras')
 ```
 
 ## Load Sklearn Models:

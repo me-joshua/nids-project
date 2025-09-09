@@ -1,6 +1,3 @@
-@app.route("/", methods=["GET"])
-def index():
-    return "NIDS Backend is running.", 200
 #!/usr/bin/env python3
 """
 Flask API Backend for Network Intrusion Detection System

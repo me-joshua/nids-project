@@ -494,8 +494,8 @@ def save_all_models(dl_model, base_models, ensemble_models, data_processor, moda
     
     print(f"Saving models to: {model_dir}")
     
-    # 1. Save TensorFlow multimodal model
-    tf_model_path = os.path.join(model_dir, "multimodal_deep_learning")
+    # 1. Save TensorFlow multimodal model in Keras format
+    tf_model_path = os.path.join(model_dir, "multimodal_deep_learning.keras")
     dl_model.save(tf_model_path)
     print(f"✅ Saved TensorFlow model: {tf_model_path}")
     
