@@ -137,11 +137,56 @@ class NIDSPredictor:
                 print("⚠️  No feature groups found, using default feature groups")
                 self.feature_groups = self._get_default_feature_groups()
             
-            # Load TensorFlow multimodal model
-            tf_model_path = os.path.join(self.models_dir, "multimodal_deep_learning.keras")
-            if os.path.exists(tf_model_path):
-                self.multimodal_model = tf.keras.models.load_model(tf_model_path)
-                print("✅ Loaded TensorFlow multimodal model (.keras format)")
+            # Load TensorFlow multimodal model - try multiple formats for compatibility
+            print("🔄 Loading TensorFlow multimodal model...")
+            
+            # Try SavedModel format first (better cross-version compatibility)
+            saved_model_path = os.path.join(self.models_dir, "multimodal_deep_learning")
+            keras_model_path = os.path.join(self.models_dir, "multimodal_deep_learning.keras")
+            
+            model_loaded = False
+            
+            # First try: SavedModel format
+            if os.path.exists(saved_model_path):
+                try:
+                    print(f"🔍 Trying SavedModel format: {saved_model_path}")
+                    self.multimodal_model = tf.keras.models.load_model(saved_model_path)
+                    print("✅ Loaded TensorFlow model from SavedModel format")
+                    model_loaded = True
+                except Exception as e1:
+                    print(f"❌ SavedModel loading failed: {e1}")
+            
+            # Second try: .keras format
+            if not model_loaded and os.path.exists(keras_model_path):
+                try:
+                    print(f"🔍 Trying .keras format: {keras_model_path}")
+                    # Get file info for debugging
+                    import stat
+                    file_stat = os.stat(keras_model_path)
+                    print(f"🔍 File size: {file_stat.st_size} bytes")
+                    print(f"🔍 File permissions: {stat.filemode(file_stat.st_mode)}")
+                    
+                    # Try standard loading
+                    self.multimodal_model = tf.keras.models.load_model(keras_model_path)
+                    print("✅ Loaded TensorFlow multimodal model (.keras format)")
+                    model_loaded = True
+                except Exception as e2:
+                    print(f"❌ .keras format loading failed: {e2}")
+                    
+                    # Try loading without compilation
+                    try:
+                        print("🔄 Trying to load .keras without compilation...")
+                        self.multimodal_model = tf.keras.models.load_model(keras_model_path, compile=False)
+                        print("✅ Loaded TensorFlow model (.keras format) without compilation")
+                        model_loaded = True
+                    except Exception as e3:
+                        print(f"❌ .keras loading without compilation failed: {e3}")
+            
+            if not model_loaded:
+                print("❌ Failed to load TensorFlow model in any format")
+                print(f"📁 Checked paths:")
+                print(f"   SavedModel: {saved_model_path} (exists: {os.path.exists(saved_model_path)})")
+                print(f"   .keras: {keras_model_path} (exists: {os.path.exists(keras_model_path)})")
             
             # Load sklearn base models
             base_models_dir = os.path.join(self.models_dir, "base_models")
