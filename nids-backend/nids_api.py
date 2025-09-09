@@ -39,7 +39,26 @@ def index():
 class NIDSPredictor:
     """Network Intrusion Detection System Predictor"""
     
-    def __init__(self, models_dir="../models"):
+    def __init__(self, models_dir=None):
+        # Auto-detect models directory based on current file location
+        if models_dir is None:
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            # Try different possible paths for models directory
+            possible_paths = [
+                os.path.join(current_dir, "..", "models"),  # Local development
+                os.path.join(os.path.dirname(current_dir), "models"),  # Render deployment
+                os.path.join(current_dir, "models"),  # Same directory
+                "/opt/render/project/src/models"  # Absolute Render path
+            ]
+            
+            for path in possible_paths:
+                if os.path.exists(path):
+                    models_dir = path
+                    break
+            
+            if models_dir is None:
+                models_dir = "../models"  # Fallback to original
+                
         self.models_dir = models_dir
         self.models_loaded = False
         self.multimodal_model = None
@@ -95,6 +114,11 @@ class NIDSPredictor:
         """Load all saved models and preprocessors"""
         try:
             print("Loading NIDS models...")
+            print(f"📂 Models directory: {self.models_dir}")
+            print(f"📂 Directory exists: {os.path.exists(self.models_dir)}")
+            
+            if os.path.exists(self.models_dir):
+                print(f"📂 Contents: {os.listdir(self.models_dir)}")
             
             # Load configuration
             config_path = os.path.join(self.models_dir, "model_config.json")
@@ -105,6 +129,7 @@ class NIDSPredictor:
                     print(f"✅ Loaded configuration with {len(self.feature_groups)} feature groups")
             else:
                 print("⚠️  Config file not found, using default feature groups")
+                print(f"⚠️  Looked for config at: {config_path}")
                 self.feature_groups = self._get_default_feature_groups()
             
             # Ensure we have feature groups
@@ -593,6 +618,17 @@ class NIDSPredictor:
 # Global predictor instance
 predictor = NIDSPredictor()
 
+# Load models on module import for production deployment
+try:
+    predictor.load_models()
+    if predictor.models_loaded:
+        print("✅ Models loaded successfully on startup")
+    else:
+        print("⚠️  Models not loaded - will attempt again when first request is made")
+except Exception as e:
+    print(f"⚠️  Error loading models on startup: {e}")
+    print("🔄 Will attempt to load models on first request")
+
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Health check endpoint"""
@@ -709,8 +745,6 @@ if __name__ == '__main__':
     print("NAS Technology - Network Intrusion Detection System API")
     print("=" * 60)
     
-    # System information
-    
     # Load models on startup
     predictor.load_models()
     
@@ -726,4 +760,15 @@ if __name__ == '__main__':
     print(f"   POST /api/analyze - Analyze single packet")
     print(f"   POST /api/analyze/batch - Analyze multiple packets")
     
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Use appropriate server based on environment
+    port = int(os.environ.get('PORT', 5000))
+    debug_mode = os.environ.get('FLASK_ENV') == 'development'
+    
+    if debug_mode:
+        print(f"🔧 Development mode - using Flask dev server")
+        app.run(debug=True, host='0.0.0.0', port=port)
+    else:
+        print(f"🚀 Production mode - Flask app ready for WSGI server")
+        print(f"🌐 Listening on port {port}")
+        # In production, this will be served by gunicorn
+        app.run(debug=False, host='0.0.0.0', port=port)
