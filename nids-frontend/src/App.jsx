@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Shield, AlertTriangle, CheckCircle, XCircle, Loader2, Bot, User, Trash2 } from 'lucide-react';
+import { Send, Shield, AlertTriangle, CheckCircle, XCi, Bot, User, Trash2 } from 'lucide-react';
 import axios from 'axios';
 
 // API Configuration
