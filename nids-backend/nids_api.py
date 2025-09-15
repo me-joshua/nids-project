@@ -803,7 +803,7 @@ def internal_error(error):
     return jsonify({'error': 'Internal server error'}), 500
 
 if __name__ == '__main__':
-    print("NAS Technology - Network Intrusion Detection System API")
+    print("NEXUS AI - Network Intrusion Detection System API")
     print("=" * 60)
     
     # Load models on startup

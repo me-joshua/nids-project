@@ -10,7 +10,7 @@ const App = () => {
     {
       id: 1,
       type: 'system',
-      content: 'Welcome to NAS Technology Network Intrusion Detection System. Paste a network packet data line and I\'ll analyze it for potential threats using our advanced multimodal ensemble AI models.',
+      content: 'Welcome to NEXUS AI Network Intrusion Detection System. Paste a network packet data line and I\'ll analyze it for potential threats using our advanced multimodal ensemble AI models.',
       timestamp: new Date()
     }
   ]);
@@ -215,7 +215,7 @@ const App = () => {
         <div className="flex items-center gap-2 mb-6">
           <Shield className="h-8 w-8 text-blue-400" />
           <div className="flex-1">
-            <h1 className="font-bold text-lg">NAS Technology</h1>
+            <h1 className="font-bold text-lg">NEXUS AI</h1>
             <p className="text-xs text-gray-400">NIDS AI System</p>
           </div>
           <div className="flex flex-col items-center">
