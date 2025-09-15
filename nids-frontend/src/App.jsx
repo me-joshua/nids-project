@@ -116,8 +116,14 @@ const App = () => {
         <div className="bg-chat-input p-4 rounded-lg">
           <h4 className="font-semibold mb-2 text-cyan-400">Deep Learning Analysis</h4>
           <div className="text-sm">
-            <p><strong>Multimodal Confidence:</strong> {(analysis.deep_learning.confidence * 100).toFixed(2)}%</p>
-            <p><strong>Modalities Processed:</strong> {analysis.deep_learning.modalities_count}</p>
+            {analysis.deep_learning.confidence !== null && analysis.deep_learning.confidence !== undefined ? (
+              <>
+                <p><strong>Multimodal Confidence:</strong> {(analysis.deep_learning.confidence * 100).toFixed(2)}%</p>
+                <p><strong>Modalities Processed:</strong> {analysis.deep_learning.modalities_count}</p>
+              </>
+            ) : (
+              <p className="text-gray-400">Deep learning model not available or failed to process.</p>
+            )}
           </div>
         </div>
 

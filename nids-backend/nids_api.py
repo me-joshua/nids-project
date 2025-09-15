@@ -469,7 +469,7 @@ class NIDSPredictor:
                 print(f"Expected model input names: {[inp.name for inp in self.multimodal_model.inputs] if hasattr(self.multimodal_model, 'inputs') else 'Unknown'}")
                 results['deep_learning'] = {
                     'prediction': 0,
-                    'confidence': 0.0,
+                    'confidence': None,
                     'modalities_count': len(modalities),
                     'error': str(e)
                 }
