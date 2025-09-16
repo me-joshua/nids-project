@@ -10,7 +10,7 @@ const App = () => {
     {
       id: 1,
       type: 'system',
-      content: 'Welcome to NEXUS AI Network Intrusion Detection System. Paste a network packet data line and I\'ll analyze it for potential threats using our advanced multimodal ensemble AI models.',
+      content: 'Welcome to NEXUS AI Network Intrusion Detection System. Paste a network packet data line and I\'ll analyze it for potential threats using our machine learning models.',
       timestamp: new Date()
     }
   ]);
@@ -83,49 +83,23 @@ const App = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-chat-input p-4 rounded-lg">
-            <h4 className="font-semibold mb-2 text-blue-400">Base Models</h4>
-            <div className="space-y-1 text-sm">
-              {Object.entries(analysis.base_models).map(([model, pred]) => (
-                <div key={model} className="flex justify-between">
-                  <span className="capitalize">{model.replace('_', ' ')}:</span>
-                  <span className={pred.prediction === 1 ? 'text-red-400' : 'text-green-400'}>
-                    {(pred.confidence * 100).toFixed(1)}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-chat-input p-4 rounded-lg">
-            <h4 className="font-semibold mb-2 text-purple-400">Ensemble Models</h4>
-            <div className="space-y-1 text-sm">
-              {Object.entries(analysis.ensemble_models).map(([model, pred]) => (
-                <div key={model} className="flex justify-between">
-                  <span className="capitalize">{model.replace('_', ' ')}:</span>
-                  <span className={pred.prediction === 1 ? 'text-red-400' : 'text-green-400'}>
-                    {(pred.confidence * 100).toFixed(1)}%
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
         <div className="bg-chat-input p-4 rounded-lg">
-          <h4 className="font-semibold mb-2 text-cyan-400">Deep Learning Analysis</h4>
-          <div className="text-sm">
-            {analysis.deep_learning.confidence !== null && analysis.deep_learning.confidence !== undefined ? (
-              <>
-                <p><strong>Multimodal Confidence:</strong> {(analysis.deep_learning.confidence * 100).toFixed(2)}%</p>
-                <p><strong>Modalities Processed:</strong> {analysis.deep_learning.modalities_count}</p>
-              </>
-            ) : (
-              <p className="text-gray-400">Deep learning model not available or failed to process.</p>
-            )}
+          <h4 className="font-semibold mb-2 text-blue-400">ML Models</h4>
+          <div className="space-y-1 text-sm">
+            {Object.entries(analysis.base_models)
+              .filter(([model]) => ['random_forest', 'svm', 'extra_trees', 'gradient_boosting'].includes(model))
+              .map(([model, pred]) => (
+                <div key={model} className="flex justify-between">
+                  <span className="capitalize">{model.replace('_', ' ')}:</span>
+                  <span className={pred.prediction === 1 ? 'text-red-400' : 'text-green-400'}>
+                    {(pred.confidence * 100).toFixed(1)}%
+                  </span>
+                </div>
+              ))}
           </div>
         </div>
+
+
 
         {analysis.processing_time && (
           <div className="text-xs text-gray-400 text-center">
@@ -202,7 +176,7 @@ const App = () => {
       {
         id: 1,
         type: 'system',
-        content: 'Welcome to NAS Technology Network Intrusion Detection System. Paste a network packet data line and I\'ll analyze it for potential threats using our advanced multimodal ensemble AI models.',
+        content: 'Welcome to NEXUS AI Network Intrusion Detection System. Paste a network packet data line and I\'ll analyze it for potential threats using our machine learning models.',
         timestamp: new Date()
       }
     ]);
@@ -264,9 +238,10 @@ const App = () => {
         <div className="mt-4 p-3 bg-chat-input rounded-lg">
           <div className="text-xs text-gray-400">
             <p className="font-semibold mb-1">AI Models Active:</p>
-            <p>• Multimodal Deep Learning</p>
-            <p>• 6 Base ML Models</p>
-            <p>• 2 Ensemble Models</p>
+            <p>• Random Forest</p>
+            <p>• SVM</p>
+            <p>• Extra Trees</p>
+            <p>• Gradient Boosting</p>
           </div>
         </div>
       </div>
@@ -344,7 +319,7 @@ const App = () => {
               <div className="bg-chat-input rounded-lg p-4">
                 <div className="flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Analyzing packet with multimodal AI models...</span>
+                  <span>Analyzing packet with ML models...</span>
                 </div>
               </div>
             </div>
