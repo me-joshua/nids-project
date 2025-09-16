@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Shield, AlertTriangle, CheckCircle, XCi, Bot, User, Trash2 } from 'lucide-react';
+import { Send, Shield, AlertTriangle, CheckCircle, XCircle, Bot, User, Trash2, Loader2 } from 'lucide-react';
 import axios from 'axios';
 
 // API Configuration
@@ -62,37 +62,51 @@ const App = () => {
   };
 
   const formatAnalysisResult = (analysis) => {
-    const threat = getThreatLevel(analysis.ensemble_confidence);
+    // Add error handling for missing data
+    if (!analysis || typeof analysis !== 'object') {
+      return (
+        <div className="text-red-400">
+          <p>Error: Invalid analysis data received</p>
+        </div>
+      );
+    }
+
+    const ensembleConfidence = analysis.ensemble_confidence || 0;
+    const attackProbability = analysis.attack_probability || 0;
+    const isAttack = analysis.is_attack || false;
+    const baseModels = analysis.base_models || {};
+    
+    const threat = getThreatLevel(ensembleConfidence);
     
     return (
       <div className="space-y-4">
         <div className={`p-4 rounded-lg border-2 ${threat.glow}`} style={{ borderColor: `var(--tw-color-${threat.color})` }}>
           <div className="flex items-center gap-2 mb-2">
-            {analysis.is_attack ? (
+            {isAttack ? (
               <XCircle className={`h-5 w-5 text-${threat.color}`} />
             ) : (
               <CheckCircle className="h-5 w-5 text-threat-normal" />
             )}
             <span className={`font-bold text-${threat.color}`}>
-              {analysis.is_attack ? `THREAT DETECTED - ${threat.level}` : 'NORMAL TRAFFIC'}
+              {isAttack ? `THREAT DETECTED - ${threat.level}` : 'NORMAL TRAFFIC'}
             </span>
           </div>
           <div className="text-sm text-chat-text">
-            <p><strong>Ensemble Confidence:</strong> {(analysis.ensemble_confidence * 100).toFixed(2)}%</p>
-            <p><strong>Attack Probability:</strong> {(analysis.attack_probability * 100).toFixed(2)}%</p>
+            <p><strong>Ensemble Confidence:</strong> {(ensembleConfidence * 100).toFixed(2)}%</p>
+            <p><strong>Attack Probability:</strong> {(attackProbability * 100).toFixed(2)}%</p>
           </div>
         </div>
 
         <div className="bg-chat-input p-4 rounded-lg">
           <h4 className="font-semibold mb-2 text-blue-400">ML Models</h4>
           <div className="space-y-1 text-sm">
-            {Object.entries(analysis.base_models)
+            {Object.entries(baseModels)
               .filter(([model]) => ['random_forest', 'svm', 'extra_trees', 'gradient_boosting'].includes(model))
               .map(([model, pred]) => (
                 <div key={model} className="flex justify-between">
                   <span className="capitalize">{model.replace('_', ' ')}:</span>
-                  <span className={pred.prediction === 1 ? 'text-red-400' : 'text-green-400'}>
-                    {(pred.confidence * 100).toFixed(1)}%
+                  <span className={pred && pred.prediction === 1 ? 'text-red-400' : 'text-green-400'}>
+                    {pred ? (pred.confidence * 100).toFixed(1) : '0.0'}%
                   </span>
                 </div>
               ))}
